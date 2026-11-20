@@ -10,5 +10,12 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    # Starlette 1.x takes (request, name); the old (name, {"request": ...})
+    # form raises "unhashable type: 'dict'" and returned a 500 on /.
+    return templates.TemplateResponse(request, "index.html")
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
